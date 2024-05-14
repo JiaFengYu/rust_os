@@ -1,0 +1,105 @@
+Freestanding Rust binary
+
+- freestanding means an executable that can be run "baremetal",
+ie, it can run on top of hardware without any other os hosting it
+it contains all the necessary code to initialize the hardware, 
+manage system resources, and run applications
+
+- by default, rust links to std:: (rust standard library), which depends on 
+OS features/impls, and also links to libc (?)
+so we can't use std because we don't want to be limited by OS specific code
+hence, use #![no_std] inner attribute 
+
+- inner #![] vs outer #[] attributes differ in scope of applying attribute
+inner applies to enclosed scope (so this case entire file) while outer is only 
+the item which follows the attr
+and attr essentially modify the compiler behaviour by providing metadata via the attr
+(eg potentially telling it to generate default code for this trait or 
+if to include this section in the final bin)
+
+- Short review on traits: 
+traits define shared behaviour, ie, a set of fn's or methods that 
+any struct can claim if they implement the appropriate methods via impl
+eg: 
+
+trait Animal {
+    fn speak(&self);
+    // eat here has a default impl
+    fn eat(&self) {
+        println!("Eating...");
+    }
+}
+
+struct Dog;
+
+impl Animal for Dog {
+    fn speak(&self) {
+        println!("Woof!");
+    }
+
+    // Using default implementation for `eat`
+}
+
+struct Cat;
+
+impl Animal for Cat {
+    fn speak(&self) {
+        println!("Meow!");
+    }
+    // overriding the default impl for eat
+    fn eat(&self) {
+        println!("Cat is eating...");
+    }
+}
+
+ok bacc to freestanding binary
+
+- std:: provides a default panic handler (which is called when an unrecoverable error 
+occurs - divide by 0, access illegal memory, explicit call to panic etc.)
+(panic is similar to exceptions in python)
+
+- return type ! means its a diverging fn (a fn that never returns)
+
+- we disable unwinding when panicking because unwinding requires os specific libs
+
+- we don't have access to the rust runtime env because we used the inner attr #![no_std]
+(the runtime env is provided by the standard library)
+
+- the #![no_main] inner attr tells us that we are overwriting the normal crt0 (c runtime zero)
+entry point (which then calls the main fn), which is provided in the std lib runtime env
+- we therefore also remove the main fn
+- we define the new entry point (where the program starts executing) as _start
+- the #[no_mangle] outer attr tells the compiler that we do NOT want to change the name of this
+fn, which otherwise, the compiler has the liberty to call it w/e it wants 
+(usually the compiler names the fns some random unreadeable string that is unique)
+- _start is usually the entrypoint for most SYSTEMS, hence the name
+- pub means its a public fn, meaning that external code can access this fn at all time
+- extern "C" means we are using that this fn is using the C calling convention 
+(instead of the Rust calling conv)
+(mainly because its a convention among system level software)
+
+calling convention is part of the ABI:
+Key elements of a calling convention include:
+Argument Passing: Defines whether function arguments are passed in registers 
+or on the stack, and if so, which registers or stack positions are used.
+Return Values: Specifies how the return value of a function is passed back to the caller 
+(typically via registers).
+Stack Management: Details how the stack frame is set up and torn down during function calls, 
+including which part of the code is responsible for cleaning up the stack.
+Register Preservation: Determines which registers must be preserved across function calls 
+(callee-saved vs. caller-saved registers).
+
+- ABI can be interpreted as the equivalent of API but between a program and the os
+
+- our final error is a linker error
+(a linker is the part which combines generated source code with other code such as 
+libraries that are linked or other source code that are imported)
+
+- the error occurs because normal compilation sets up the linker to use the c runtime by default
+which we dont have access to because of #![no_std], so we need to compile for a system host 
+which doesn't use crt0, which one doesnt really matter as long as its a bare metal target
+
+- compiling using cargo build --target means we are cross-compiling, essentially compiling 
+for a platform that is different than the platform the compiler is running on 
+
+and that's a wrap to create a freestanding rust binary!
