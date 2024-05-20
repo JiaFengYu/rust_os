@@ -1,0 +1,59 @@
+
+some small type review:
+- result type:
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+// i32 is the type if success and &str is the type if error
+let x: Result<i32, &str> = Ok(-3);
+assert_eq!(x.is_ok(), true);
+
+let x: Result<i32, &str> = Err("Some error message");
+assert_eq!(x.is_ok(), false);
+
+- option type: Some() or None
+
+fn divide(numerator: f64, denominator: f64) -> Option<f64> {
+    if denominator == 0.0 {
+        None
+    } else {
+        Some(numerator / denominator)
+    }
+}
+
+// The return value of the function is an option
+let result = divide(2.0, 3.0);
+
+// Pattern match to retrieve the value
+match result {
+    // The division was valid
+    Some(x) => println!("Result: {x}"),
+    // The division was invalid
+    None    => println!("Cannot divide by 0"),
+}
+
+- unwrap() extract value from option or result
+
+- The problem is that the core library is distributed together with the Rust compiler 
+as a PRECOMPILED library 
+(since it's a crate and some of its features are used in our code, 
+which needs to be compiled for baremetal and we cant just link 2 crates compiled for different systems)
+
+- static HELLO: &[u8] = b"Hello World!";
+initializes the string HELLO, which has a static lifetime, ie, it lasts for the entire duration of the program 
+and it is stored on directly in the program binary and therefore always available
+the b in front of "Hello World!" means that this is a BYTE string, and not just a regular string, meaning 
+each char is a u8, unsigned 8bit int
+
+- enumerate just returns the iteration counter as well as the value:
+let a = ['a', 'b', 'c'];
+
+let mut iter = a.iter().enumerate();
+
+assert_eq!(iter.next(), Some((0, &'a')));
+assert_eq!(iter.next(), Some((1, &'b')));
+assert_eq!(iter.next(), Some((2, &'c')));
+assert_eq!(iter.next(), None);
+
