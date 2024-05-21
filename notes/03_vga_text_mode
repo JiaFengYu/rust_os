@@ -1,0 +1,88 @@
+- memory mapped io
+- create a VGA buffer type that encapsulates all unsafety and 
+ensures that it is impossible to do anything wrong from the outside. 
+This way, we would only need minimal amounts of unsafe code and 
+can be sure that we don’t violate memory safety. 
+- mod 
+- use
+- tuple structs:
+    struct Rectangle(f64, f64);
+    
+    fn main() {
+        let rect = Rectangle(3.0, 4.0);
+    
+        println!("Width: {}, Height: {}", rect.0, rect.1);
+    }
+
+- regular structs:
+    struct Rectangle {
+        width: f64,
+        height: f64,
+    }
+    
+    impl Rectangle {
+        fn area(&self) -> f64 {
+            self.width * self.height
+        }
+    
+        fn perimeter(&self) -> f64 {
+            2.0 * (self.width + self.height)
+        }
+    }
+    
+    fn main() {
+        let rect = Rectangle {
+            width: 3.0,
+            height: 4.0,
+        };
+    
+        println!("Width: {}", rect.width);
+        println!("Height: {}", rect.height);
+        println!("Area: {}", rect.area());
+        println!("Perimeter: {}", rect.perimeter());
+    }
+
+- newtype means we are wrapping an existing type to provide 
+more info or fn's over it
+
+- note that a custome constructor fn (new) isn't necessary
+(and it doesn't have to have a specific name, in fact, you can 
+have multiple different constructors and you can still use the 
+basic constructor as well, constructors are just like any other fn's)
+
+- repr transparent means the internal data structure will be exactly the same 
+the u8 type, else the compiler is free to optimize the way it wants
+
+- explicit lifetime
+
+- 'static lifetime vs static lifetime --- oh nvm i think they the same and
+its only just 'static
+
+- volatile means that the value may change outside the control of the program
+
+- dereferencing (accessing value at) raw pointer requires unsafe block, but 
+raw pointer itself doesnt
+
+- in Rust, volatile means that the compiler will never optimize (out) this read/write
+
+- static objects are initialized at compile time instead of runtime
+
+- why cant we have mutable references in static objects
+
+- constant fn in rust is a fn that can be evaluated at compile time
+
+- our vga buffer and writer are INHERENTLY safer than doing manual pointer arithmetic 
+because:
+    - the main problem with pointer arithmetic is we are writing in locations that we aren't 
+    supposed to write at, corrupting other memory locations 
+    - however, with our impl, the write_byte method only allows you to write in the vga array 
+    locations with the hardcoded, CONSTANT, buffer height/width variables, and since all 
+    other fn's build on top of this one, we ensure we are never writing out of bounds
+    - furthermore, with newline and clear row we also provide bound checking
+    - we also provide mutex for multithreading safety and volatile to make sure our changes 
+    are not optimized away by the compiler
+
+- $crate variable in macro paths allow for access items defined within the same crate, 
+even when the macro is used from other crates.
+(eg if we cherry pick a macro X to use in file A, but X requires a fn called Y that is in the same crate, 
+but Y is not imported to A, but if in the impl of X we use $crate::Y instead of Y directly, we gucci
