@@ -15,9 +15,9 @@ features = ["spin_no_std"]
 # redundant because we added abort on panic in 
 # compilation target but for clarity kept it
 [profile.dev]
-panic = "abort"
+#panic = "abort"
 
 # redundant because we added abort on panic in 
 # compilation target but for clarity kept it
 [profile.release]
-panic = "abort"
+#panic = "abort"

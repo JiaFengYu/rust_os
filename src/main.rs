@@ -3,6 +3,27 @@
 // we are not using main the standard entrypoint and providing 
 // our own, because the standrd one is os dependent
 #![no_main]
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+#![reexport_test_harness_main = "test_main"]
+
+#[cfg(test)]
+pub fn test_runner(tests: &[&dyn Fn()]) {
+    println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
+}
+
+
+#[test_case]
+fn trivial_assertion() {
+    print!("trivial assertion... ");
+    assert_eq!(1, 1);
+    println!("[ok]");
+}
+
+
 
 mod vga_buffer;
 
@@ -54,6 +75,10 @@ pub extern "C" fn _start() -> !{
     println!("We are now printing from the println! macro through a 
         well defined, safe VGA buffer interface :)");
 
+    #[cfg(test)]
+    test_main();
+
     panic!("Testing panic handler");
     loop {}
 }
+
