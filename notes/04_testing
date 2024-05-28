@@ -1,1 +1,22 @@
+- custom test frameworks feature generates a main function that calls test_runner, but this function is ignored because 
+we use the #[no_main] attribute and provide our own entry point
+- to fix this, we change the name of the generated function to something different than main through
+#![reexport_test_harness_main = "test_main"]
+and we can call the testing main generated fn with test_main()
+
+- cargo test will run any tests that is in the directory, not just tests in the integration tests/ folder
+
 - Fn() trait???
+is a trait for all "function like types", it represents a function or closure that takes no parameters and returns no value
+hence, all fn's implement the Fn() trait
+
+-dyn keyword is used to create a trait object -> which allows for dynamic dispatch, ie,
+the type implementing the trait is determined at runtime instead of compile time
+
+- impl<T> :is a generic impl for any type T
+Testable for T :means we are impl the trait Testable for T
+where T: Fn() :means we only take types T which impl the Fn() trait
+
+- for integration tests in tests/, we don't have access to fn's in main because we are running a completely different 
+executable from main, so to have those fn's defined, we must move them from main to lib.rs, which is where 
+we define the public API any file in our crate can use

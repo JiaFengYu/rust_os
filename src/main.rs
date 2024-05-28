@@ -4,31 +4,15 @@
 // our own, because the standrd one is os dependent
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(crate::test_runner)]
-#![reexport_test_harness_main = "test_main"]
+#![test_runner(rust_os::testing_fns::test_runner)]
+#![cfg_attr(test, reexport_test_harness_main = "test_main")]
 
-#[cfg(test)]
-pub fn test_runner(tests: &[&dyn Fn()]) {
-    println!("Running {} tests", tests.len());
-    for test in tests {
-        test();
-    }
-}
-
-
-#[test_case]
-fn trivial_assertion() {
-    print!("trivial assertion... ");
-    assert_eq!(1, 1);
-    println!("[ok]");
-}
-
-
-
-mod vga_buffer;
-
+// PRINTING MODULE
 use core::panic::PanicInfo;
+use rust_os::println;
 
+// standard panic handler
+#[cfg(not(test))]
 // current panic handler - can't do much so just loop
 // because we loop, so never return, therefore type !
 #[panic_handler]
@@ -46,7 +30,7 @@ static HELLO: &[u8] = b"Hello World!";
 pub extern "C" fn _start() -> !{
     // this is the entrypoint, and it is named _start 
     // because the linker looks for _start as the entrypoint
-    
+
     // // VERSION1: print to vga buffer manually via 
     // // unsafe raw pointer arithmetics with no bound checking
     // // why do we ned to cast it as a raw pointer?
@@ -61,15 +45,15 @@ pub extern "C" fn _start() -> !{
 
     // // VERSION2: print using a public fn from vga_buffer
     // vga_buffer::print_something();
-    
-    
+
+
     // //VERSION3: print using global Writer object
     // use core::fmt::Write;
     // // two different methods of writing to the vga buffer
     // vga_buffer::WRITER.lock().write_str("Hello again").unwrap();
     // write!(vga_buffer::WRITER.lock(), ", some numbers: {} {}", 4.20, 69).unwrap();
-    
-    
+
+
     // VERSION4: print using println! macro now implemented
     println!("Hello World{}", "!");
     println!("We are now printing from the println! macro through a 
@@ -80,5 +64,78 @@ pub extern "C" fn _start() -> !{
 
     panic!("Testing panic handler");
     loop {}
+}
+
+// now in lib.rs
+//
+//
+// #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+//
+// #[repr(u32)]
+// pub enum QemuExitCode {
+//     Success = 0x10,
+//     Failed = 0x11,
+// }
+// 
+// pub fn exit_qemu(exit_code: QemuExitCode) {
+//     use x86_64::instructions::port::Port;
+// 
+//     unsafe {
+//         // why does port have to be mutable here?
+//         // ans: because we are writing to hw
+//         let mut port = Port::new(0xf4);
+//         port.write(exit_code as u32);
+//     }
+// }
+
+
+// // TESTING MODULE
+// Mod serial;
+// 
+// Pub trait Testable {
+//     fn run(&self) -> ();
+// }
+// 
+// // blanket impl for any type T which impl Fn() trait
+// Impl<T> Testable for T 
+// Where 
+// T: Fn(),
+// {
+//     fn run(&self) {
+//         serial_print!("{}...\t", core::any::type_name::<T>());
+//         self();
+//         serial_println!("[ok]");
+//     }
+// }
+// 
+// #[cfg(test)]
+// Pub fn test_runner(tests: &[&dyn Testable]) {
+//     serial_println!("Running {} tests", tests.len());
+//     for test in tests {
+//         test.run();
+//     }
+// 
+//     loop {}
+//     // now with the exit fn
+//     exit_qemu(QemuExitCode::Success);
+// }
+// 
+// RUN THIS PANIC HANDLER WHEN WE ARE TESTING
+#[cfg(test)]
+#[panic_handler]
+fn panic(_info: &PanicInfo) -> ! {
+    // VERSION1
+    // serial_println!("[failed]\n");
+    // serial_println!("Error: {}\n", _info);
+    // exit_qemu(QemuExitCode::Failed);
+    // loop {}
+    // // now with lib.rs
+    rust_os::testing_fns::test_panic_handler(_info)
+}
+
+// trivial test
+#[test_case]
+fn trivial_assertion() {
+    assert_eq!(0, 0);
 }
 
