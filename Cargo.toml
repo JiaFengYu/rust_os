@@ -10,6 +10,7 @@ bootloader = "0.9"
 volatile = "0.2.6"
 # to gain access to spinlock
 spin = "0.5.2"
+# to gain access to interrupts
 x86_64 = "0.14.2"
 uart_16550 = "0.2.0"
 

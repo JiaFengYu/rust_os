@@ -59,8 +59,16 @@ pub extern "C" fn _start() -> !{
     println!("We are now printing from the println! macro through a 
         well defined, safe VGA buffer interface :)");
 
+    // inits the interrupt module, maybe come up with better name than init?
+    rust_os::init();
+    // why does this line cause a breakpoint?
+    // we import x86_64 crate from toml
+    x86_64::instructions::interrupts::int3();
+
     #[cfg(test)]
     test_main();
+
+    println!("It did not crash pepelaugh");
 
     panic!("Testing panic handler");
     loop {}

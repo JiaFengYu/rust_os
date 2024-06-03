@@ -1,0 +1,10 @@
+- type alias is just giving an existing type a new name, under the hood they are 
+the exact same type, eg:
+    type Kilometers = i32;
+    the Kilometers type is the exact same type as i32, its a synonym for it
+
+type HandlerFunc = extern "x86-interrupt" fn(_: InterruptStackFrame);
+means we are assinging HandlerFunc the same type as RHS 
+which btw is using the syntax of extern "C" fn; to signify a foreign function 
+using the C calling convention, but here we are saying its a foreign function 
+using the "x86-interrupt" calling convention

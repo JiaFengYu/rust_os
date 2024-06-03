@@ -3,11 +3,14 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+// TO USE X86 INTERRUPT EXPERIMENTAL CALLING CONVENTION
+#![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
 
 pub mod serial;
 pub mod vga_buffer;
+pub mod interrupts;
 
 pub trait Testable {
     fn run(&self) -> ();
@@ -59,6 +62,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
     loop {}
 }
@@ -67,4 +71,13 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
+}
+
+
+
+
+
+// exception handler module
+pub fn init() {
+    interrupts::init_idt();
 }
