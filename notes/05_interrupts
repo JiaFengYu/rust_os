@@ -8,3 +8,9 @@ means we are assinging HandlerFunc the same type as RHS
 which btw is using the syntax of extern "C" fn; to signify a foreign function 
 using the C calling convention, but here we are saying its a foreign function 
 using the "x86-interrupt" calling convention
+
+-int3 is the name of the breakpoint instruction
+(actually, why can we call 
+x86_64::instructions::interrupts::int3();
+without importing it with use or mod, even if 
+we declared it in cargo.toml?)
