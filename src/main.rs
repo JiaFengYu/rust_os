@@ -61,6 +61,14 @@ pub extern "C" fn _start() -> !{
 
     // inits the interrupt module, maybe come up with better name than init?
     rust_os::init();
+
+    // Uncomment below to test double fault handler
+    // trigger page fault
+    // DEADBEEF PEPELAUGH
+    // unsafe { 
+    //     *(0xdeadbeef as *mut u8) = 42;
+    // };
+
     // why does this line cause a breakpoint?
     // we import x86_64 crate from toml
     x86_64::instructions::interrupts::int3();

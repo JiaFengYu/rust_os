@@ -1,0 +1,11 @@
+- how does lazy static work under the hood?
+- double fault handler is divering (never returns) 
+because x86 architecture does not allow returning from 
+this exception
+
+- whats usize?
+- ist = interrupt stack table
+- tss = task state segment
+- gdt = global descriptor table
+
+what is tail recursive?
