@@ -7,15 +7,15 @@ use rust_os::serial_print;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    serial_print!("stack_overflow::stack_overflow...\t");
+    serial_print!("stacc_overflow::stacc_overflow...\t");
 
     rust_os::gdt::init();
     init_test_idt();
 
-    // trigger a stack overflow
-    stack_overflow();
+    // trigger a stacc overflow
+    stacc_overflow();
 
-    panic!("Execution continued after stack overflow");
+    panic!("Execution continued after stacc overflow");
 }
 
 #[panic_handler]
@@ -24,8 +24,8 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 #[allow(unconditional_recursion)]
-fn stack_overflow() {
-    stack_overflow(); // for each recursion, the return address is pushed
+fn stacc_overflow() {
+    stacc_overflow(); // for each recursion, the return address is pushed
     volatile::Volatile::new(0).read(); // prevent tail recursion optimizations
 }
 

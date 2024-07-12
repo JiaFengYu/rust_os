@@ -20,3 +20,5 @@ where T: Fn() :means we only take types T which impl the Fn() trait
 - for integration tests in tests/, we don't have access to fn's in main because we are running a completely different 
 executable from main, so to have those fn's defined, we must move them from main to lib.rs, which is where 
 we define the public API any file in our crate can use
+
+- the println! macro prints to vga by default, this is why we created the serial_println! macro to print to console

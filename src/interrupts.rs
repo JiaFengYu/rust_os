@@ -2,6 +2,8 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 use crate::println;
 use crate::gdt;
 use lazy_static::lazy_static;
+use pic8259::ChainedPics;
+use spin;
 
 // lazy static object, so initialized at runtime instead of compile time
 lazy_static! {
@@ -10,7 +12,7 @@ lazy_static! {
         idt.breakpoint.set_handler_fn(breakpoint_handler);
         unsafe {
             idt.double_fault.set_handler_fn(double_fault_handler)
-                .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX); // new
+                .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
         idt 
     };
@@ -35,3 +37,13 @@ fn test_breakpoint_exception() {
     // test if breakpoint works in test
     x86_64::instructions::interrupts::int3();
 }
+
+// Hardware interrupt impl
+
+pub const PIC_1_OFFSET: u8 = 32;
+pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
+
+pub static PICS: spin::Mutex<ChainedPics> =
+    spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
+
+#[derive(Debug, Clone, Copy)]

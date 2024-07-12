@@ -12,7 +12,10 @@ volatile = "0.2.6"
 spin = "0.5.2"
 # to gain access to interrupts
 x86_64 = "0.14.2"
+# to be able to print to serial port and print to console
 uart_16550 = "0.2.0"
+# to access pic programming
+pic8259 = "0.10.1"
 
 # to have lazy static initialization
 [dependencies.lazy_static]

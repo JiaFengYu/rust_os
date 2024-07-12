@@ -78,8 +78,10 @@ fn panic(info: &PanicInfo) -> ! {
 
 
 
-// exception handler module
+// interrupt handler module
 pub fn init() {
     gdt::init();
     interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }

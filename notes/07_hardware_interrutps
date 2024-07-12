@@ -1,0 +1,21 @@
+- Interrupt controller aggregates all the input from physical devices and tells the cpu
+                                    ____________             _____
+               Timer ------------> |            |           |     |
+               Keyboard ---------> | Interrupt  |---------> | CPU |
+               Other Hardware ---> | Controller |           |_____|
+               Etc. -------------> |____________|
+
+this is "reactive rather than proactive" which is better (efficiency + speed) because cpu only needs to do something 
+when there is something to do rather than periodly check after a certain amount of time (polling)
+- most importantly, these interrupt controller are programmable - hence Programmable Interrupt Controller, ie, PIC
+
+- the #[derive(Debug, Clone, Copy)] outer attr
+allows you to claim the default debug clone and copy traits 
+debug: enables formatting the value using the {:?} formatter
+clone: explicit copying (may or may not be deep depending on object)
+copy: implicit copying (always shallow) 
+
+- for the standard trait for clone which we claim with derive(Clone), it performs a first level deep copy, 
+and depending on the underlying types of the struct, which might or might not perform a deep copy, 
+by this i mean that simple types such as ints and floats dont distinct a deep and shallow copy so its not a "deep copy"
+per se, but clone will always ensure taht we have a new complete object is copied and allocated.

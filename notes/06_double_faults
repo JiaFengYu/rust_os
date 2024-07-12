@@ -4,8 +4,12 @@ because x86 architecture does not allow returning from
 this exception
 
 - whats usize?
+- idt = interrupt descriptor table
 - ist = interrupt stack table
 - tss = task state segment
 - gdt = global descriptor table
 
-what is tail recursive?
+what is tail recursive fn?
+it just means a fn that recurses AND has the last computation of the fn being the recursive step
+- this is important because it allows the compiler to optimize the recursion and reducing overhead/
+prevent staccc overflows

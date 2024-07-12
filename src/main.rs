@@ -59,19 +59,21 @@ pub extern "C" fn _start() -> !{
     println!("We are now printing from the println! macro through a 
         well defined, safe VGA buffer interface :)");
 
-    // inits the interrupt module, maybe come up with better name than init?
+    // inits the interrupt module (so far), maybe come up with better name than init?
     rust_os::init();
 
-    // Uncomment below to test double fault handler
-    // trigger page fault
+    // Uncomment below to trigger double fault interrupt
+    // will trigger page fault -> page fault not impl so double fault is triggered
     // DEADBEEF PEPELAUGH
     // unsafe { 
     //     *(0xdeadbeef as *mut u8) = 42;
     // };
 
-    // why does this line cause a breakpoint?
-    // we import x86_64 crate from toml
-    x86_64::instructions::interrupts::int3();
+    // // why does this line cause a breakpoint?
+    // // int3 is the code for a breakpoint interrupt 
+    // // we import x86_64 crate from toml
+    // // uncomment for a breakpoint exception
+    // x86_64::instructions::interrupts::int3();
 
     #[cfg(test)]
     test_main();

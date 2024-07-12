@@ -45,7 +45,7 @@ can be sure that we don’t violate memory safety.
 - newtype means we are wrapping an existing type to provide 
 more info or fn's over it
 
-- note that a custome constructor fn (new) isn't necessary
+- note that a custom constructor fn (new) isn't necessary
 (and it doesn't have to have a specific name, in fact, you can 
 have multiple different constructors and you can still use the 
 basic constructor as well, constructors are just like any other fn's)
