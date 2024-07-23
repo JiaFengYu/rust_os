@@ -20,7 +20,9 @@ fn panic(_info: &PanicInfo) -> ! {
     // now with println! macro impl, we can output the 
     // panic info to vga buffer
     println!("{}", _info);
-    loop {}
+    // now no longer needed with hlt_loop impl
+    // loop {}
+    rust_os::hlt_loop();
 }
 
 static HELLO: &[u8] = b"Hello World!";
@@ -79,9 +81,10 @@ pub extern "C" fn _start() -> !{
     test_main();
 
     println!("It did not crash pepelaugh");
+    rust_os::hlt_loop();
 
-    panic!("Testing panic handler");
-    loop {}
+    // to test panic hanlder
+    // panic!("Testing panic handler");
 }
 
 // now in lib.rs

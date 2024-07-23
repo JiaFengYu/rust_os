@@ -16,6 +16,8 @@ x86_64 = "0.14.2"
 uart_16550 = "0.2.0"
 # to access pic programming
 pic8259 = "0.10.1"
+# for keyboard scancode matching
+pc-keyboard = "0.7.0"
 
 # to have lazy static initialization
 [dependencies.lazy_static]

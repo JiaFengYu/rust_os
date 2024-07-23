@@ -13,6 +13,7 @@ pub mod vga_buffer;
 pub mod interrupts;
 pub mod gdt;
 
+// testing module fns and impl
 pub trait Testable {
     fn run(&self) -> ();
 }
@@ -84,4 +85,10 @@ pub fn init() {
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
 }

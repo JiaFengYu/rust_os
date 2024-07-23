@@ -19,3 +19,83 @@ copy: implicit copying (always shallow)
 and depending on the underlying types of the struct, which might or might not perform a deep copy, 
 by this i mean that simple types such as ints and floats dont distinct a deep and shallow copy so its not a "deep copy"
 per se, but clone will always ensure taht we have a new complete object is copied and allocated.
+
+- copy always does a shallow/bitwise copy, but it is an independent object with its own memory so it also claims
+its own ownership, so no need to worry about dropping ownership.
+
+- we set handler fns differently for double fault/breakpoints vs timer interrupt, why?
+- the different method of setting the handler function for the timer interrupt (idt[InterruptIndex::Timer.as_usize()]) 
+compared to the breakpoint (idt.breakpoint) and double fault (idt.double_fault) is due 
+to the distinction between predefined exceptions (which have direct accessors) and general interrupts 
+(which are accessed via their index in the IDT array).
+- well known exceptions like double faults have their own predefine, direct accessors, 
+which is not the case for more general interrupts like timer, so we need to access it via array indexing
+
+- a mutex in rust (if locked) is automatically unlocked when the mutex goes out of scope via the mutexguard
+
+-the hardware timer is enabled by default if hardware exceptions are enabled, and if we didnt setup  
+
+- fns in rust which return () - so the unit type, ie, nothing - do not need to annotate its return type
+
+- any other fns, so fns which do not return the unit type, NEED to explitely annotate the return type
+
+- slices in rust are simply references into an array such that we can access the elements we desire without 
+having to deal with transferring ownership
+
+- Mutable Reference (&mut) vs. Mutable Binding (mut):
+let mut largest = &list[0]; means largest is a mutable binding to an immutable reference.
+let largest = &mut list[0]; would mean largest is an immutable binding to a mutable reference, allowing modification of list[0] through largest.
+
+- keep in mind all variables in rust are immutable by default
+
+- <T> is a generic type that can be used to generalize fns to not just a single type:
+
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+fn largest<T>(list: &[T]) -> &T {
+    let mut largest = &list[0];
+
+    for item in list {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+fn main() {
+    // because 5 and 4.0 aren't the same type
+    let wont_work = Point { x: 5, y: 4.0 };
+}
+
+could generalize further with:
+
+struct Point<T, U> {
+    x: T,
+    y: U,
+}
+
+// now 
+// let wont_work = Point { x: 5, y: 4.0 }; would work
+
+- closure ~= anonymous fn
+
+- eg: (inside the || are the parameter list for this closure, in this case no arguments)
+|| { 
+    WRITER.lock().write_fmt(args).unwrap();
+}
+
+this closure is just a wrapper around the writer write fn, it doesnt do anything else except execute that line
+
+- writeln! vs println!
+
+- why do you need both mutex locking and interrupt disabling?
+Interrupts Disabled: No interrupt handlers can preempt the current thread and potentially modify shared resources during the critical section.
+Mutex Locking: Access to the WRITER object is properly synchronized, preventing other threads (if any) from concurrently modifying its state.
+
+- if let Some(key) = Key 
+is a form of pattern matching:
+If key is Some('x'), the value 'x' is extracted and assigned to the variable key inside the if block.
