@@ -67,9 +67,9 @@ pub extern "C" fn _start() -> !{
     // Uncomment below to trigger double fault interrupt
     // will trigger page fault -> page fault not impl so double fault is triggered
     // DEADBEEF PEPELAUGH
-    // unsafe { 
-    //     *(0xdeadbeef as *mut u8) = 42;
-    // };
+    unsafe { 
+        *(0xdeadbeef as *mut u8) = 42;
+    };
 
     // // why does this line cause a breakpoint?
     // // int3 is the code for a breakpoint interrupt 
